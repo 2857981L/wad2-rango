@@ -5,6 +5,35 @@
 </head>
 <body>
     <h1>Rango says hello world!</h1>
+
+    <h2>Top Categories</h2>
+    {% if categories %}
+        <ul>
+        {% for c in categories %}
+            <li>
+                <a href="{% url 'rango:show_category' c.name %}">{{ c.name }}</a>
+                (likes: {{ c.likes }}, views: {{ c.views }})
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <strong>There are no categories present.</strong>
+    {% endif %}
+
+    <h2>Top Pages</h2>
+    {% if pages %}
+        <ul>
+        {% for p in pages %}
+            <li>
+                <a href="{{ p.url }}">{{ p.title }}</a>
+                (views: {{ p.views }})
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <strong>There are no pages present.</strong>
+    {% endif %}
+
     <p><a href="{% url 'rango:about' %}">About</a></p>
 </body>
 </html>
