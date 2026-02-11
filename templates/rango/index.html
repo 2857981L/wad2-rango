@@ -7,6 +7,8 @@ Home
 {% block body_block %}
 <h1>Rango says hello world!</h1>
 
+<p><strong>Visits:</strong> {{ visits }}</p>
+
 <h2>Top Categories</h2>
 <p><a href="{% url 'rango:add_category' %}">Add a New Category</a></p>
 
@@ -37,6 +39,3 @@ Home
     <strong>There are no pages present.</strong>
 {% endif %}
 {% endblock %}
-
-
-

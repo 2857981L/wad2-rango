@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,21 +7,51 @@ from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm
 
 
+def visitor_cookie_handler(request):
+    visits = int(request.session.get('visits', '1'))
+    last_visit = request.session.get('last_visit', str(datetime.now()))
+
+    last_visit_time = datetime.strptime(last_visit.split('.')[0], '%Y-%m-%d %H:%M:%S')
+
+    if (datetime.now() - last_visit_time).days > 0:
+        visits += 1
+        request.session['last_visit'] = str(datetime.now())
+    else:
+        request.session['last_visit'] = last_visit
+
+    request.session['visits'] = visits
+
+
 def index(request):
+    visitor_cookie_handler(request)
+
     category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
-    return render(request, 'rango/index.html', {'categories': category_list, 'pages': page_list})
+
+    context_dict = {
+        'categories': category_list,
+        'pages': page_list,
+        'visits': request.session.get('visits', 1),
+    }
+    return render(request, 'rango/index.html', context_dict)
 
 
 def about(request):
-    return render(request, 'rango/about.html')
+    visitor_cookie_handler(request)
+    return render(request, 'rango/about.html', {'visits': request.session.get('visits', 1)})
 
 
 def show_category(request, category_name_slug):
     context_dict = {}
+    visitor_cookie_handler(request)
 
     try:
         category = Category.objects.get(slug=category_name_slug)
+
+        # Increment the category views count
+        category.views = category.views + 1
+        category.save()
+
         pages = Page.objects.filter(category=category).order_by('-views')
 
         context_dict['category'] = category
@@ -29,6 +60,7 @@ def show_category(request, category_name_slug):
         context_dict['category'] = None
         context_dict['pages'] = None
 
+    context_dict['visits'] = request.session.get('visits', 1)
     return render(request, 'rango/category.html', context=context_dict)
 
 
@@ -74,7 +106,6 @@ def register(request):
             user = user_form.save()
             user.set_password(user.password)
             user.save()
-
             registered = True
         else:
             print(user_form.errors)

@@ -5,6 +5,8 @@ Category
 {% endblock %}
 
 {% block body_block %}
+<p><strong>Visits:</strong> {{ visits }}</p>
+
 {% if category %}
     <h1>{{ category.name }}</h1>
     <p>Views: {{ category.views }} | Likes: {{ category.likes }}</p>
