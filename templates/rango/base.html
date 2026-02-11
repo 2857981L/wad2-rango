@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title_block %}Rango{% endblock %}</title>
+</head>
+<body>
+    <div>
+        <a href="{% url 'rango:index' %}">Home</a> |
+        <a href="{% url 'rango:about' %}">About</a> |
+        <a href="{% url 'rango:add_category' %}">Add Category</a>
+    </div>
+    <hr>
+    {% block body_block %}{% endblock %}
+</body>
+</html>
+
